@@ -1,11 +1,12 @@
 #include <iostream>
 #include <stdexcept>
 
-class vector
+template <typename T>
+class Vector
 {
 private:
 	unsigned int size = 0;
-	int* dinamycArray = nullptr;
+	T* dinamycArray = nullptr;
 
 	void checkIndex(unsigned int index) const
 	{
@@ -16,16 +17,17 @@ private:
 	}
 
 public:
-	vector(int sizeOffArray)
+	Vector() = default;
+	Vector(int sizeOffArray)
 	{
 		size = sizeOffArray;
-		dinamycArray = new int[size];
+		dinamycArray = new T[size];
 	}
 
-	vector(const vector& other)
+	Vector(const Vector& other)
 	{
 		size = other.size;
-		dinamycArray = new int[size];
+		dinamycArray = new T[size];
 
 		for (unsigned int i = 0; i < size; i++)
 		{
@@ -33,14 +35,14 @@ public:
 		}
 	}
 
-	vector& operator=(const vector& other)
+	Vector& operator=(const Vector& other)
 	{
 		if (this != &other)
 		{
 			delete[] dinamycArray;
 
 			size = other.size;
-			dinamycArray = new int[size];
+			dinamycArray = new T[size];
 
 			for (unsigned int i = 0; i < size; i++)
 			{
@@ -51,14 +53,14 @@ public:
 		return *this;
 	}
 
-	~vector()
+	~Vector()
 	{
 		delete[] dinamycArray;
 	}
 
 	void resize(int newSize)
 	{
-		int* newArray = new int[newSize];
+		T* newArray = new T[newSize];
 
 		for (unsigned int i = 0; i < size; i++)
 		{
@@ -71,19 +73,19 @@ public:
 		dinamycArray = newArray;
 	}
 
-	int& operator[](unsigned int index)
+	T& operator[](unsigned int index)
 	{
 		checkIndex(index);
 		return dinamycArray[index];
 	}
 
-	int operator[](unsigned int index) const
+	const T& operator[](unsigned int index) const
 	{
 		checkIndex(index);
 		return dinamycArray[index];
 	}
 
-	bool operator==(const vector& other) const
+	bool operator==(const Vector& other) const
 	{
 		if (size != other.size)
 		{
@@ -101,7 +103,7 @@ public:
 		return true;
 	}
 
-	bool operator!=(const vector& other) const
+	bool operator!=(const Vector& other) const
 	{
 		return !(*this == other);
 	}
@@ -111,13 +113,13 @@ public:
 		return size > 0;
 	}
 
-	void set(int index, int newValue)
+	void set(int index, const T& newValue)
 	{
 		checkIndex(index);
 		dinamycArray[index] = newValue;
 	}
 
-	int get(int index) const
+	const T& get(int index) const
 	{
 		checkIndex(index);
 		return dinamycArray[index];
@@ -126,7 +128,7 @@ public:
 
 int main()
 {
-	vector numbers(3);
+	Vector<int> numbers(3);
 
 	numbers.set(0, 111);
 	numbers.set(1, 222);
@@ -149,7 +151,7 @@ int main()
 	std::cout << numbers.get(3) << "\n";
 	std::cout << numbers.get(4) << "\n";
 
-	vector copyNumbers = numbers;
+	Vector<int> copyNumbers = numbers;
 
 	copyNumbers[0] = 999;
 	std::cout << "Copy array:\n";
@@ -162,7 +164,7 @@ int main()
 	std::cout << "Original array:\n";
 	std::cout << numbers[0] << "\n";
 
-	vector assigned(2);
+	Vector<int> assigned(2);
 	assigned = numbers;
 	std::cout << "Assigned array:\n";
 	std::cout << assigned[0] << "\n";
@@ -179,7 +181,7 @@ int main()
 	std::cout << assigned[3] << "\n";
 	std::cout << assigned[4] << "\n";
 
-	const vector constNumbers = numbers;
+	const Vector<int> constNumbers = numbers;
 	std::cout << "Const array:\n";
 	std::cout << constNumbers[0] << "\n";
 
@@ -215,7 +217,7 @@ int main()
 		std::cout << "Caught exception: " << e.what() << "\n";
 	}
 
-	vector empty(0);
+	Vector<int> empty(0);
 	if (empty)
 	{
 		std::cout << "Empty vector is not empty\n";
@@ -241,6 +243,40 @@ int main()
 
 	bool hasData = static_cast<bool>(numbers);
 	std::cout << "static_cast<bool>(numbers): " << hasData << "\n";
+
+	Vector<int> defaultNumbers;
+	if (defaultNumbers)
+	{
+		std::cout << "Default vector is not empty\n";
+	}
+	else
+	{
+		std::cout << "Default vector is empty\n";
+	}
+
+	Vector<double> prices(3);
+	prices.set(0, 1.5);
+	prices.set(1, 2.25);
+	prices.set(2, 10.0);
+
+	std::cout << "Double vector:\n";
+	std::cout << prices.get(0) << "\n";
+	std::cout << prices.get(1) << "\n";
+	std::cout << prices.get(2) << "\n";
+
+	prices[1] = 99.99;
+	std::cout << "After prices[1] = 99.99: " << prices[1] << "\n";
+
+	Vector<double> pricesCopy = prices;
+
+	if (prices == pricesCopy)
+	{
+		std::cout << "prices and pricesCopy are equal\n";
+	}
+	else
+	{
+		std::cout << "prices and pricesCopy are not equal\n";
+	}
 
 	return 0;
 }
