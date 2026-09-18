@@ -106,6 +106,11 @@ public:
 		return !(*this == other);
 	}
 
+	explicit operator bool() const
+	{
+		return size > 0;
+	}
+
 	void set(int index, int newValue)
 	{
 		checkIndex(index);
@@ -209,6 +214,33 @@ int main()
 	{
 		std::cout << "Caught exception: " << e.what() << "\n";
 	}
+
+	vector empty(0);
+	if (empty)
+	{
+		std::cout << "Empty vector is not empty\n";
+	}
+	else
+	{
+		std::cout << "Empty vector is empty\n";
+	}
+
+	if (numbers)
+	{
+		std::cout << "Numbers vector is not empty\n";
+	}
+	else
+	{
+		std::cout << "Numbers vector is empty\n";
+	}
+
+	if (numbers && !empty)
+	{
+		std::cout << "logical operators work too\n";
+	}
+
+	bool hasData = static_cast<bool>(numbers);
+	std::cout << "static_cast<bool>(numbers): " << hasData << "\n";
 
 	return 0;
 }
