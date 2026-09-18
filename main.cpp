@@ -1,12 +1,32 @@
 #include <iostream>
 #include <stdexcept>
+#include <sstream>
+
 
 template <typename T>
 class Vector
 {
 private:
 	unsigned int size = 0;
+	unsigned int capacity = 0;
 	T* dinamycArray = nullptr;
+
+	void resize()
+	{
+		unsigned int newCapacity = (capacity == 0) ? 1 : capacity * 2;
+		T* newArray = new T[newCapacity];
+
+		for (unsigned int i = 0; i < size; i++)
+		{
+			newArray[i] = dinamycArray[i];
+		}
+
+		delete[] dinamycArray;
+
+		dinamycArray = newArray;
+		capacity = newCapacity;
+	}
+
 
 	void checkIndex(unsigned int index) const
 	{
@@ -21,13 +41,15 @@ public:
 	Vector(int sizeOffArray)
 	{
 		size = sizeOffArray;
-		dinamycArray = new T[size];
+		capacity = sizeOffArray;
+		dinamycArray = new T[capacity];
 	}
 
 	Vector(const Vector& other)
 	{
 		size = other.size;
-		dinamycArray = new T[size];
+		capacity = other.capacity;
+		dinamycArray = new T[capacity];
 
 		for (unsigned int i = 0; i < size; i++)
 		{
@@ -42,7 +64,8 @@ public:
 			delete[] dinamycArray;
 
 			size = other.size;
-			dinamycArray = new T[size];
+			capacity = other.capacity;
+			dinamycArray = new T[capacity];
 
 			for (unsigned int i = 0; i < size; i++)
 			{
@@ -58,20 +81,17 @@ public:
 		delete[] dinamycArray;
 	}
 
-	void resize(int newSize)
+	void push_back(const T& value)
 	{
-		T* newArray = new T[newSize];
-
-		for (unsigned int i = 0; i < size; i++)
+		if (size == capacity)
 		{
-			newArray[i] = dinamycArray[i];
+			resize();
 		}
 
-		size = newSize;
-
-		delete[] dinamycArray;
-		dinamycArray = newArray;
+		dinamycArray[size] = value;
+		++size;
 	}
+
 
 	T& operator[](unsigned int index)
 	{
@@ -113,6 +133,41 @@ public:
 		return size > 0;
 	}
 
+	friend std::ostream& operator<<(std::ostream& out, const Vector& vector)
+	{
+		out << "[";
+
+		for (unsigned int i = 0; i < vector.size; i++)
+		{
+			out << vector.dinamycArray[i];
+
+			if (i != vector.size - 1)
+			{
+				out << ", ";
+			}
+		}
+
+		out << "]";
+
+		return out;
+	}
+
+	friend std::istream& operator>>(std::istream& in, Vector& vector)
+	{
+		unsigned int count = 0;
+		in >> count;
+
+		for (unsigned int i = 0; i < count; i++)
+		{
+			T value;
+			in >> value;
+			vector.push_back(value);
+		}
+
+		return in;
+	}
+
+
 	void set(int index, const T& newValue)
 	{
 		checkIndex(index);
@@ -124,6 +179,17 @@ public:
 		checkIndex(index);
 		return dinamycArray[index];
 	}
+
+	unsigned int getSize() const
+	{
+		return size;
+	}
+
+	unsigned int getCapacity() const
+	{
+		return capacity;
+	}
+
 };
 
 int main()
@@ -139,10 +205,17 @@ int main()
 	std::cout << numbers.get(1) << "\n";
 	std::cout << numbers.get(2) << "\n";
 
-	numbers.resize(5);
+	std::cout << "Before push_back: size = " << numbers.getSize()
+		<< ", capacity = " << numbers.getCapacity() << "\n";
 
-	numbers.set(3, 444);
-	numbers.set(4, 555);
+	numbers.push_back(444);
+	std::cout << "After push_back(444): size = " << numbers.getSize()
+		<< ", capacity = " << numbers.getCapacity() << "\n";
+
+	numbers.push_back(555);
+	std::cout << "After push_back(555): size = " << numbers.getSize()
+		<< ", capacity = " << numbers.getCapacity() << "\n";
+
 
 	std::cout << "Array after resize:\n";
 	std::cout << numbers.get(0) << "\n";
@@ -277,6 +350,34 @@ int main()
 	{
 		std::cout << "prices and pricesCopy are not equal\n";
 	}
+
+	Vector<int> growing;
+
+	std::cout << "Growth from empty vector:\n";
+
+	for (int i = 0; i < 5; i++)
+	{
+		growing.push_back(i);
+		std::cout << "size = " << growing.getSize()
+			<< ", capacity = " << growing.getCapacity() << "\n";
+	}
+
+	std::cout << "numbers: " << numbers << "\n";
+	std::cout << "prices: " << prices << "\n";
+	std::cout << "chained: " << numbers << " and " << prices << "\n";
+
+	Vector<int> streamed;
+	std::istringstream input("3 10 20 30");
+	input >> streamed;
+
+	std::cout << "Read from stream: " << streamed << "\n";
+	std::cout << "size = " << streamed.getSize()
+		<< ", capacity = " << streamed.getCapacity() << "\n";
+
+	std::ostringstream output;
+	output << streamed;
+	std::cout << "Into ostringstream: " << output.str() << "\n";
+
 
 	return 0;
 }
