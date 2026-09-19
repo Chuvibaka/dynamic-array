@@ -192,6 +192,25 @@ public:
 
 };
 
+template <typename T>
+void insertion_sort(Vector<T>& arr)
+{
+	for (int i = 1; i < static_cast<int>(arr.getSize()); ++i)
+	{
+		T value = arr[i];
+		int j = i - 1;
+
+		while (j >= 0 && arr[j] > value)
+		{
+			arr[j + 1] = arr[j];
+			--j;
+		}
+
+		arr[j + 1] = value;
+	}
+}
+
+
 int main()
 {
 	Vector<int> numbers(3);
@@ -377,6 +396,46 @@ int main()
 	std::ostringstream output;
 	output << streamed;
 	std::cout << "Into ostringstream: " << output.str() << "\n";
+
+	Vector<int> unsorted;
+	unsorted.push_back(5);
+	unsorted.push_back(2);
+	unsorted.push_back(9);
+	unsorted.push_back(1);
+	unsorted.push_back(5);
+	unsorted.push_back(6);
+
+	std::cout << "Before insertion_sort: " << unsorted << "\n";
+	insertion_sort(unsorted);
+	std::cout << "After insertion_sort:  " << unsorted << "\n";
+
+	Vector<double> unsortedPrices;
+	unsortedPrices.push_back(10.5);
+	unsortedPrices.push_back(2.25);
+	unsortedPrices.push_back(99.9);
+	unsortedPrices.push_back(0.5);
+
+	std::cout << "Before insertion_sort: " << unsortedPrices << "\n";
+	insertion_sort(unsortedPrices);
+	std::cout << "After insertion_sort:  " << unsortedPrices << "\n";
+
+	Vector<int> reversed;
+	reversed.push_back(4);
+	reversed.push_back(3);
+	reversed.push_back(2);
+	reversed.push_back(1);
+
+	insertion_sort(reversed);
+	std::cout << "Reversed after sort:   " << reversed << "\n";
+
+	Vector<int> single;
+	single.push_back(42);
+	insertion_sort(single);
+	std::cout << "Single after sort:     " << single << "\n";
+
+	Vector<int> nothing;
+	insertion_sort(nothing);
+	std::cout << "Empty after sort:      " << nothing << "\n";
 
 
 	return 0;
