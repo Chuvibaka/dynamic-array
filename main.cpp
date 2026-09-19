@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
+#include <algorithm>
 
 
 template <typename T>
@@ -37,6 +38,51 @@ private:
 	}
 
 public:
+
+	class Iterator
+	{
+	private:
+		T* ptr = nullptr;
+
+	public:
+		using iterator_category = std::random_access_iterator_tag;
+		using value_type = T;
+		using difference_type = std::ptrdiff_t;
+		using pointer = T*;
+		using reference = T&;
+
+		Iterator(T* ptr = nullptr)
+			: ptr(ptr)
+		{
+		}
+
+		reference operator*() const { return *ptr; }
+		pointer operator->() const { return ptr; }
+
+		Iterator& operator++() { ++ptr; return *this; }
+		Iterator operator++(int) { Iterator temp = *this; ++ptr; return temp; }
+
+		Iterator& operator--() { --ptr; return *this; }
+		Iterator operator--(int) { Iterator temp = *this; --ptr; return temp; }
+
+		Iterator& operator+=(difference_type n) { ptr += n; return *this; }
+		Iterator& operator-=(difference_type n) { ptr -= n; return *this; }
+
+		Iterator operator+(difference_type n) const { return Iterator(ptr + n); }
+		Iterator operator-(difference_type n) const { return Iterator(ptr - n); }
+
+		difference_type operator-(const Iterator& other) const { return ptr - other.ptr; }
+
+		reference operator[](difference_type n) const { return ptr[n]; }
+
+		bool operator==(const Iterator& other) const { return ptr == other.ptr; }
+		bool operator!=(const Iterator& other) const { return ptr != other.ptr; }
+		bool operator<(const Iterator& other) const { return ptr < other.ptr; }
+		bool operator>(const Iterator& other) const { return ptr > other.ptr; }
+		bool operator<=(const Iterator& other) const { return ptr <= other.ptr; }
+		bool operator>=(const Iterator& other) const { return ptr >= other.ptr; }
+	};
+
 	Vector() = default;
 	Vector(int sizeOffArray)
 	{
@@ -189,6 +235,17 @@ public:
 	{
 		return capacity;
 	}
+
+	Iterator begin()
+	{
+		return Iterator(dinamycArray);
+	}
+
+	Iterator end()
+	{
+		return Iterator(dinamycArray + size);
+	}
+
 
 };
 
@@ -436,6 +493,21 @@ int main()
 	Vector<int> nothing;
 	insertion_sort(nothing);
 	std::cout << "Empty after sort:      " << nothing << "\n";
+
+	Vector<int> iterable;
+	iterable.push_back(30);
+	iterable.push_back(10);
+	iterable.push_back(20);
+
+	std::cout << "Iterator loop: ";
+	for (Vector<int>::Iterator it = iterable.begin(); it != iterable.end(); ++it)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << "\n";
+
+	std::sort(iterable.begin(), iterable.end());
+	std::cout << "After std::sort: " << iterable << "\n";
 
 
 	return 0;
