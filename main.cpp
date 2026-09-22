@@ -1,10 +1,19 @@
 #include <iostream>
+#include <stdexcept>
 
 class vector
 {
 private:
 	unsigned int size = 0;
 	int* dinamycArray = nullptr;
+
+	void checkIndex(unsigned int index) const
+	{
+		if (index >= size)
+		{
+			throw std::out_of_range("Index out of range");
+		}
+	}
 
 public:
 	vector(int sizeOffArray)
@@ -64,11 +73,13 @@ public:
 
 	int& operator[](unsigned int index)
 	{
+		checkIndex(index);
 		return dinamycArray[index];
 	}
 
 	int operator[](unsigned int index) const
 	{
+		checkIndex(index);
 		return dinamycArray[index];
 	}
 
@@ -97,11 +108,13 @@ public:
 
 	void set(int index, int newValue)
 	{
+		checkIndex(index);
 		dinamycArray[index] = newValue;
 	}
 
 	int get(int index) const
 	{
+		checkIndex(index);
 		return dinamycArray[index];
 	}
 };
@@ -187,6 +200,15 @@ int main()
 	std::cout << "After changing assigned[1] to 888:\n";
 	std::cout << "numbers[1]: " << numbers[1] << "\n";
 	std::cout << "assigned[1]: " << assigned[1] << "\n";
+
+	try
+	{
+		numbers.get(10);
+	}
+	catch (const std::out_of_range& e)
+	{
+		std::cout << "Caught exception: " << e.what() << "\n";
+	}
 
 	return 0;
 }
