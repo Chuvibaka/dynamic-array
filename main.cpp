@@ -103,24 +103,33 @@ public:
 		}
 	}
 
+	void swap(Vector& other)
+	{
+		T* tempArray = other.dinamycArray;
+		other.dinamycArray = dinamycArray;
+		dinamycArray = tempArray;
+
+		unsigned int tempSize = other.size;
+		other.size = size;
+		size = tempSize;
+
+		unsigned int tempCapacity = other.capacity;
+		other.capacity = capacity;
+		capacity = tempCapacity;
+	}
+
+
 	Vector& operator=(const Vector& other)
 	{
 		if (this != &other)
 		{
-			delete[] dinamycArray;
-
-			size = other.size;
-			capacity = other.capacity;
-			dinamycArray = new T[capacity];
-
-			for (unsigned int i = 0; i < size; i++)
-			{
-				dinamycArray[i] = other.dinamycArray[i];
-			}
+			Vector temp(other);
+			swap(temp);
 		}
 
 		return *this;
 	}
+
 
 	~Vector()
 	{
